@@ -1,7 +1,9 @@
-// src/router/index.js
+
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import TicTacToe from '../components/TicTacToe.vue';
+import Register from '../components/Register.vue';
+import Perfil from '../components/Perfil.vue';
 
 const routes = [
   {
@@ -13,6 +15,16 @@ const routes = [
     path: '/tictactoe',
     name: 'TicTacToe',
     component: TicTacToe
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  },
+  {
+    path: '/perfil',
+    name: 'Perfil',
+    component: Perfil
   }
 ];
 

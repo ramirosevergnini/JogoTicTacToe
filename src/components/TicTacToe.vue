@@ -1,18 +1,23 @@
-<!-- src/components/TicTacToe.vue -->
 <template>
-  <div class="game">
-    <div class="board">
-      <div
-        v-for="(cell, index) in board"
-        :key="index"
-        class="cell"
-        @click="makeMove(index)"
-      >
-        {{ cell }}
-      </div>
+  <div class="jogo">
+    <div class="topo">
+      <router-link to="/perfil" class="link-editar-conta"><img src="../assets/default-profile.png" alt="Imagem default perfil"></router-link>
     </div>
-    <div class="status">{{ statusMessage }}</div>
-    <button @click="resetGame">Reiniciar Jogo</button>
+    <div class="tabuleiro-container">
+      <div class="tabuleiro">
+        <div
+          v-for="(celula, indice) in tabuleiro"
+          :key="indice"
+          class="celula"
+          @click="fazerJogada(indice)"
+          :class="{'celula-x': celula === 'X', 'celula-o': celula === 'O'}"
+        >
+          {{ celula }}
+        </div>
+      </div>
+      <div class="status">{{ mensagemStatus }}</div>
+      <button @click="reiniciarJogo" class="botao-reiniciar">Reiniciar Jogo</button>
+    </div>
   </div>
 </template>
 
@@ -20,31 +25,31 @@
 export default {
   data() {
     return {
-      board: Array(9).fill(null),
-      currentPlayer: 'X',
-      winner: null
+      tabuleiro: Array(9).fill(null),
+      jogadorAtual: 'X',
+      vencedor: null
     };
   },
   computed: {
-    statusMessage() {
-      return this.winner
-        ? `Vencedor: ${this.winner}`
-        : `Próximo jogador: ${this.currentPlayer}`;
+    mensagemStatus() {
+      return this.vencedor
+        ? `Vencedor: ${this.vencedor}`
+        : `Próximo jogador: ${this.jogadorAtual}`;
     }
   },
   methods: {
-    makeMove(index) {
-      if (this.board[index] === null && !this.winner) {
-        this.$set(this.board, index, this.currentPlayer);
-        if (this.checkWinner()) {
-          this.winner = this.currentPlayer;
+    fazerJogada(indice) {
+      if (this.tabuleiro[indice] === null && !this.vencedor) {
+        this.tabuleiro.splice(indice, 1, this.jogadorAtual);
+        if (this.verificarVencedor()) {
+          this.vencedor = this.jogadorAtual;
         } else {
-          this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+          this.jogadorAtual = this.jogadorAtual === 'X' ? 'O' : 'X';
         }
       }
     },
-    checkWinner() {
-      const winningCombinations = [
+    verificarVencedor() {
+      const combinacoesVencedoras = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
@@ -55,54 +60,120 @@ export default {
         [2, 4, 6]
       ];
 
-      return winningCombinations.some(combination => {
-        const [a, b, c] = combination;
+      return combinacoesVencedoras.some(combinacao => {
+        const [a, b, c] = combinacao;
         return (
-          this.board[a] &&
-          this.board[a] === this.board[b] &&
-          this.board[a] === this.board[c]
+          this.tabuleiro[a] &&
+          this.tabuleiro[a] === this.tabuleiro[b] &&
+          this.tabuleiro[a] === this.tabuleiro[c]
         );
       });
     },
-    resetGame() {
-      this.board = Array(9).fill(null);
-      this.currentPlayer = 'X';
-      this.winner = null;
+    reiniciarJogo() {
+      this.tabuleiro = Array(9).fill(null);
+      this.jogadorAtual = 'X';
+      this.vencedor = null;
     }
   }
 };
 </script>
 
 <style scoped>
-.game {
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.jogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  width: 100vw;
+  height: 100vh;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.topo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #333;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.topo img {
+  height: 50px;
+}
+
+.tabuleiro-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.board {
+
+.tabuleiro {
   display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-template-rows: repeat(3, 100px);
-  gap: 5px;
+  grid-template-columns: repeat(3, 120px);
+  grid-template-rows: repeat(3, 120px);
+  gap: 10px;
+  margin-bottom: 20px;
 }
-.cell {
+
+.celula {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 100px;
-  border: 1px solid #000;
-  font-size: 2rem;
+  width: 120px;
+  height: 120px;
+  border: 2px solid #444;
+  font-size: 3rem;
   cursor: pointer;
+  background-color: #fff;
+  transition: background-color 0.3s;
 }
+
+.celula:hover {
+  background-color: #f9f9f9;
+}
+
+.celula-x {
+  color: #ff6347;
+}
+
+.celula-o {
+  color: #4682b4;
+}
+
 .status {
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
 }
-button {
+
+.botao-reiniciar {
   margin-top: 20px;
   padding: 10px 20px;
-  font-size: 1rem;
+  font-size: 1.2rem;
   cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #28a745;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.botao-reiniciar:hover {
+  background-color: #218838;
 }
 </style>
