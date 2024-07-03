@@ -19,12 +19,12 @@
         </div>
         <button type="submit" class="botao-login">Login</button>
       </form>
-    </div>
-    <!-- teste  -->
+    </div>  
   </div>
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
 import { auth } from "@/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
