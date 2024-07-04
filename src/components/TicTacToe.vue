@@ -94,12 +94,11 @@ body, html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
-  width: 100vw;
-  height: 100vh;
+  width: 95vw;
+  height: 88vh;
   padding: 40px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
   position: relative;
   
 }
