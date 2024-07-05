@@ -4,7 +4,11 @@
       <router-link to="/perfil" class="link-editar-conta"><img src="../assets/default-profile.png" alt="Imagem default perfil"></router-link>
     </div>
     <div class="tabuleiro-container">
-      <div class="tabuleiro">
+      <div v-if="!modoSelecionado" class="optionsGame">
+        <button @click="jogarVsCPU" class="botao-reiniciar" style="margin-right: 55px;">1vCPU</button>
+        <button @click="jogar1v1" class="botao-reiniciar">1v1</button>
+      </div>
+      <div v-else class="tabuleiro">
         <div
           v-for="(celula, indice) in tabuleiro"
           :key="indice"
@@ -15,8 +19,8 @@
           {{ celula }}
         </div>
       </div>
-      <div class="status">{{ mensagemStatus }}</div>
-      <button @click="reiniciarJogo" class="botao-reiniciar">Reiniciar Jogo</button>
+      <div v-if="modoSelecionado" class="status">{{ mensagemStatus }}</div>
+      <button v-if="modoSelecionado" @click="reiniciarJogo" class="botao-reiniciar">Reiniciar Jogo</button>
     </div>
   </div>
 </template>
@@ -27,7 +31,9 @@ export default {
     return {
       tabuleiro: Array(9).fill(null),
       jogadorAtual: 'X',
-      vencedor: null
+      vencedor: null,
+      modoSelecionado: false,
+      jogarContraCpu: false
     };
   },
   computed: {
@@ -45,6 +51,9 @@ export default {
           this.vencedor = this.jogadorAtual;
         } else {
           this.jogadorAtual = this.jogadorAtual === 'X' ? 'O' : 'X';
+          if (this.jogarContraCpu && this.jogadorAtual === 'O' && !this.vencedor) {
+            this.jogadaCpu();
+          }
         }
       }
     },
@@ -73,6 +82,25 @@ export default {
       this.tabuleiro = Array(9).fill(null);
       this.jogadorAtual = 'X';
       this.vencedor = null;
+      this.modoSelecionado = false;
+      this.jogarContraCpu = false;
+    },
+    jogar1v1() {
+      this.modoSelecionado = true;
+      this.jogarContraCpu = false;
+    },
+    jogarVsCPU() {
+      this.modoSelecionado = true;
+      this.jogarContraCpu = true;
+    },
+    jogadaCpu() {
+      const jogadasPossiveis = this.tabuleiro
+        .map((celula, indice) => (celula === null ? indice : null))
+        .filter(indice => indice !== null);
+      const jogadaAleatoria = jogadasPossiveis[Math.floor(Math.random() * jogadasPossiveis.length)];
+      setTimeout(() => {
+        this.fazerJogada(jogadaAleatoria);
+      }, 500); // Atraso para simular a "pensada" da CPU
     }
   }
 };
@@ -98,9 +126,7 @@ body, html {
   height: 88vh;
   padding: 40px;
   border-radius: 10px;
-
   position: relative;
-  
 }
 
 .topo {
@@ -175,5 +201,11 @@ body, html {
 
 .botao-reiniciar:hover {
   background-color: #218838;
+}
+
+.optionsGame {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 </style>
