@@ -3,7 +3,9 @@ import Login from '../components/Login.vue';
 import TicTacToe from '../components/TicTacToe.vue';
 import Register from '../components/Register.vue';
 import Perfil from '../components/Perfil.vue';
+import Amigos from '../components/Amigos.vue'
 import { auth } from "@/firebase";
+
 
 const routes = [
   {
@@ -26,6 +28,12 @@ const routes = [
     path: '/perfil',
     name: 'Perfil',
     component: Perfil,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/amigos',
+    name: 'Amigos',
+    component: Amigos,
     meta: { requiresAuth: true }
   }
 ];

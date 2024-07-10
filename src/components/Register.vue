@@ -1,7 +1,7 @@
 <template>
   <div class="container-registro">
     <div class="formulario-registro">
-      <h1>Registrar</h1>
+      <h1 class="bebas-neue-regular">Registre-se</h1>
       <form @submit.prevent="registrar">
         <div class="grupo-input">
           <label for="email">Email</label>
@@ -53,12 +53,18 @@ export default {
 </script>
 
 <style scoped>
+.bebas-neue-regular {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 35px;
+  margin-top: 25px;
+}
 .container-registro {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(to bottom right, blue, purple);
 }
 
 .formulario-registro {
@@ -106,7 +112,7 @@ input::placeholder {
 .botao-registro {
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
+  background-color: blue;
   border: none;
   border-radius: 4px;
   color: white;
@@ -116,7 +122,7 @@ input::placeholder {
 }
 
 .botao-registro:hover {
-  background-color: #0056b3;
+  background-color: rgba(0, 0, 255, 0.651);
 }
 
 .link-login {

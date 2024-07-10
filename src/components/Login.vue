@@ -1,7 +1,7 @@
 <template>
   <div class="container-login">
     <div class="formulario-login">
-      <h1>Login</h1>
+      <h1 class="bebas-neue-regular">Login</h1>
       <form @submit.prevent="fazerLogin">
         <div class="grupo-input">
           <label for="email">Email</label>
@@ -17,7 +17,7 @@
             <router-link to="/register" class="link-criar-conta">aqui</router-link>
           </p>
         </div>
-        <button type="submit" class="botao-login">Login</button>
+        <button type="submit" class="botao-login">Entrar</button>
       </form>
     </div>  
   </div>
@@ -53,12 +53,18 @@ export default {
 </script>
 
 <style scoped>
+.bebas-neue-regular {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 35px;
+  margin-top: 25px;
+}
 .container-login {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(to bottom right, blue, purple);
 }
 
 .formulario-login {
@@ -106,7 +112,7 @@ input::placeholder {
 .botao-login {
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
+  background-color: blue;
   border: none;
   border-radius: 4px;
   color: white;
@@ -116,7 +122,7 @@ input::placeholder {
 }
 
 .botao-login:hover {
-  background-color: #0056b3;
+  background-color: rgba(0, 0, 255, 0.562);
 }
 
 .link-criar-conta {

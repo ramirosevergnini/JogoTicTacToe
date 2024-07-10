@@ -1,7 +1,13 @@
 <template>
   <div class="jogo">
     <div class="topo">
-      <router-link to="/perfil" class="link-editar-conta"><img src="../assets/default-profile.png" alt="Imagem default perfil"></router-link>
+      <span class="material-symbols-outlined" alt="Menu" @mouseover="mostrarAba = true">
+        menu
+      </span>
+    </div>
+    <AbaLateral :mostrarAba="mostrarAba" @fechar="mostrarAba = false" />
+    <div>
+      <h1 class="anton-sc-regular">TicTacToe</h1>
     </div>
     <div class="tabuleiro-container">
       <div v-if="!modoSelecionado" class="optionsGame">
@@ -19,21 +25,27 @@
           {{ celula }}
         </div>
       </div>
-      <div v-if="modoSelecionado" class="status">{{ mensagemStatus }}</div>
+      <div v-if="modoSelecionado" class="bebas-neue-regular">{{ mensagemStatus }}</div>
       <button v-if="modoSelecionado" @click="reiniciarJogo" class="botao-reiniciar">Reiniciar Jogo</button>
     </div>
   </div>
 </template>
 
 <script>
+import AbaLateral from './AbaLateral.vue';
+
 export default {
+  components: {
+    AbaLateral
+  },
   data() {
     return {
       tabuleiro: Array(9).fill(null),
       jogadorAtual: 'X',
       vencedor: null,
       modoSelecionado: false,
-      jogarContraCpu: false
+      jogarContraCpu: false,
+      mostrarAba: false
     };
   },
   computed: {
@@ -107,7 +119,26 @@ export default {
 </script>
 
 <style scoped>
-body, html {
+@import url('https://fonts.googleapis.com/css2?family=Anton+SC&display=swap');
+
+.anton-sc-regular {
+  font-family: "Anton SC", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 100px;
+  margin-top: 1px;
+  color: blue;
+}
+.bebas-neue-regular {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 35px;
+  margin-top: 10px;
+}
+
+body,
+html {
   height: 100%;
   margin: 0;
   display: flex;
@@ -132,7 +163,7 @@ body, html {
 .topo {
   position: absolute;
   top: 10px;
-  left: 10px;
+  left: 20px;
   color: #333;
   font-size: 1rem;
   font-weight: bold;
@@ -180,13 +211,6 @@ body, html {
   color: #4682b4;
 }
 
-.status {
-  margin-top: 10px;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-}
-
 .botao-reiniciar {
   margin-top: 20px;
   padding: 10px 20px;
@@ -194,18 +218,32 @@ body, html {
   cursor: pointer;
   border: none;
   border-radius: 5px;
-  background-color: #28a745;
+  background-color: blue;
   color: white;
   transition: background-color 0.3s;
 }
 
 .botao-reiniciar:hover {
-  background-color: #218838;
+  background-color: rgb(0, 0, 80);
 }
 
 .optionsGame {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+}
+.material-symbols-outlined {
+  color: black;
+  font-size: 40px;
+  cursor: progress;
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+.material-symbols-outlined:hover {
+  color: rgb(255, 255, 255);
+  transition: 0.2s;
 }
 </style>
