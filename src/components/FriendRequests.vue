@@ -1,12 +1,11 @@
-<!-- FriendRequests.vue -->
 <template>
   <div>
-    <h2>Pedidos de Amizade Pendentes</h2>
+    <h2 class="bebas-neue-regular">Pedidos de Amizade Pendentes</h2>
     <ul>
       <li v-for="request in pendingRequests" :key="request.id">
-        {{ request.userNameSend }} - {{ request.status }}
-        <button @click="acceptRequest(request.id)">Aceitar</button>
-        <button @click="rejectRequest(request.id)">Recusar</button>
+        <span class="bebas-neue-regular2">{{ request.userNameSend }}</span>
+        <img class="opcoesAmizade" @click="acceptRequest(request)" src="../assets/check.png" alt="Aceitar">
+        <img class="opcoesAmizade" @click="rejectRequest(request.id)" src="../assets/recuse.png" alt="Recusar">
       </li>
     </ul>
   </div>
@@ -14,7 +13,7 @@
 
 <script>
 import { db, auth } from '../firebase.js';
-import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc, addDoc } from "firebase/firestore";
 
 export default {
   data() {
@@ -34,14 +33,46 @@ export default {
         this.pendingRequests = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       }
     },
-    async acceptRequest(id) {
-      await updateDoc(doc(db, "friendRequests", id), { status: "aceito" });
-      this.fetchPendingRequests(); // Atualizar a lista após aceitar o pedido
+    async acceptRequest(request) {
+      const user = auth.currentUser;
+      const friendData = {
+        userNameSend: request.userNameSend,
+        userNameReceived: user.displayName
+      };
+
+      await updateDoc(doc(db, "friendRequests", request.id), { status: "aceito" });
+
+      await addDoc(collection(db, "friends"), friendData);
+
+      this.fetchPendingRequests();
+      this.$emit('friend-added');
     },
     async rejectRequest(id) {
       await updateDoc(doc(db, "friendRequests", id), { status: "recusado" });
-      this.fetchPendingRequests(); // Atualizar a lista após recusar o pedido
+      this.fetchPendingRequests();
     }
   }
 }
 </script>
+
+<style scoped>
+.bebas-neue-regular {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 35px;
+  margin-top: 25px;
+}
+.bebas-neue-regular2 {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 25px;
+  padding: 45px;
+}
+  .opcoesAmizade {
+    margin-top: 5px;
+    height: 30px;
+    cursor: pointer;
+  }
+</style>

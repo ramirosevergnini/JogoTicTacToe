@@ -33,6 +33,7 @@
 
 <script>
 import AbaLateral from './AbaLateral.vue';
+import { state } from '../state.js'; // Importe o estado global
 
 export default {
   components: {
@@ -52,15 +53,27 @@ export default {
     mensagemStatus() {
       return this.vencedor
         ? `Vencedor: ${this.vencedor}`
-        : `Próximo jogador: ${this.jogadorAtual}`;
+        : this.tabuleiro.includes(null)
+        ? `Próximo jogador: ${this.jogadorAtual}`
+        : 'Empate!';
     }
   },
   methods: {
     fazerJogada(indice) {
       if (this.tabuleiro[indice] === null && !this.vencedor) {
-        this.tabuleiro.splice(indice, 1, this.jogadorAtual);
+        this.tabuleiro[indice] = this.jogadorAtual; // Atualização direta sem usar $set
         if (this.verificarVencedor()) {
           this.vencedor = this.jogadorAtual;
+          if (this.jogarContraCpu) {
+            state.partidasJogadas1vsCPU += 1;
+            this.jogadorAtual === 'X' ? state.partidasGanhas += 1 : state.partidasPerdidas += 1;
+          } else {
+            state.partidasJogadas1vs1 += 1;
+            state.partidasGanhas += 1;
+          }
+        } else if (!this.tabuleiro.includes(null)) {
+          state.partidasEmpates += 1;
+          this.jogarContraCpu ? state.partidasJogadas1vsCPU += 1 : state.partidasJogadas1vs1 += 1;
         } else {
           this.jogadorAtual = this.jogadorAtual === 'X' ? 'O' : 'X';
           if (this.jogarContraCpu && this.jogadorAtual === 'O' && !this.vencedor) {
@@ -91,6 +104,9 @@ export default {
       });
     },
     reiniciarJogo() {
+      if (this.vencedor === 'O' && this.jogarContraCpu) {
+        state.partidasPerdidas += 1;
+      }
       this.tabuleiro = Array(9).fill(null);
       this.jogadorAtual = 'X';
       this.vencedor = null;
@@ -106,13 +122,71 @@ export default {
       this.jogarContraCpu = true;
     },
     jogadaCpu() {
-      const jogadasPossiveis = this.tabuleiro
-        .map((celula, indice) => (celula === null ? indice : null))
-        .filter(indice => indice !== null);
-      const jogadaAleatoria = jogadasPossiveis[Math.floor(Math.random() * jogadasPossiveis.length)];
+      const melhorJogada = this.minimax(this.tabuleiro, 'O').indice;
       setTimeout(() => {
-        this.fazerJogada(jogadaAleatoria);
-      }, 500); // Atraso para simular a "pensada" da CPU
+        this.fazerJogada(melhorJogada);
+      }, 500);
+    },
+    minimax(tabuleiro, jogador) {
+      const oponente = jogador === 'O' ? 'X' : 'O';
+
+      // Verificar se há um vencedor
+      if (this.verificarVencedorMinimax(tabuleiro, 'O')) return { pontuacao: 1 };
+      if (this.verificarVencedorMinimax(tabuleiro, 'X')) return { pontuacao: -1 };
+      if (!tabuleiro.includes(null)) return { pontuacao: 0 };
+
+      const jogadasPossiveis = [];
+      for (let i = 0; i < tabuleiro.length; i++) {
+        if (tabuleiro[i] === null) {
+          const jogada = {};
+          jogada.indice = i;
+          tabuleiro[i] = jogador;
+
+          const resultado = this.minimax(tabuleiro, oponente);
+          jogada.pontuacao = resultado.pontuacao;
+
+          tabuleiro[i] = null;
+          jogadasPossiveis.push(jogada);
+        }
+      }
+
+      let melhorJogada;
+      if (jogador === 'O') {
+        let melhorPontuacao = -Infinity;
+        for (let i = 0; i < jogadasPossiveis.length; i++) {
+          if (jogadasPossiveis[i].pontuacao > melhorPontuacao) {
+            melhorPontuacao = jogadasPossiveis[i].pontuacao;
+            melhorJogada = jogadasPossiveis[i];
+          }
+        }
+      } else {
+        let melhorPontuacao = Infinity;
+        for (let i = 0; i < jogadasPossiveis.length; i++) {
+          if (jogadasPossiveis[i].pontuacao < melhorPontuacao) {
+            melhorPontuacao = jogadasPossiveis[i].pontuacao;
+            melhorJogada = jogadasPossiveis[i];
+          }
+        }
+      }
+
+      return melhorJogada;
+    },
+    verificarVencedorMinimax(tabuleiro, jogador) {
+      const combinacoesVencedoras = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ];
+
+      return combinacoesVencedoras.some(combinacao => {
+        const [a, b, c] = combinacao;
+        return tabuleiro[a] === jogador && tabuleiro[a] === tabuleiro[b] && tabuleiro[a] === tabuleiro[c];
+      });
     }
   }
 };
@@ -168,6 +242,7 @@ html {
   font-size: 1rem;
   font-weight: bold;
 }
+
 .topo img {
   height: 50px;
 }
@@ -232,18 +307,15 @@ html {
   justify-content: center;
   margin-bottom: 20px;
 }
+
 .material-symbols-outlined {
   color: black;
   font-size: 40px;
-  cursor: progress;
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
+  cursor: pointer;
 }
+
 .material-symbols-outlined:hover {
-  color: rgb(255, 255, 255);
+  color: white;
   transition: 0.2s;
 }
 </style>

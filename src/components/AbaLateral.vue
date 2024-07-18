@@ -3,6 +3,7 @@
       <ul>
         <li><router-link class="linkMenu" to="/perfil">Perfil</router-link></li>
         <li><router-link class="linkMenu" to="/amigos">Amigos</router-link></li>
+        <li><router-link class="linkMenu" to="/estatisticas">Estatísticas</router-link></li>
       </ul>
     </div>
 </template>

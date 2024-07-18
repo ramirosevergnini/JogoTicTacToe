@@ -4,6 +4,7 @@ import TicTacToe from '../components/TicTacToe.vue';
 import Register from '../components/Register.vue';
 import Perfil from '../components/Perfil.vue';
 import Amigos from '../components/Amigos.vue'
+import Estatisticas from '../components/Estatisticas.vue'
 import { auth } from "@/firebase";
 
 
@@ -17,7 +18,14 @@ const routes = [
     path: '/tictactoe',
     name: 'TicTacToe',
     component: TicTacToe,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'estatisticas',
+        name: 'Estatisticas',
+        component: Estatisticas
+      }
+    ]
   },
   {
     path: '/register',
@@ -34,6 +42,12 @@ const routes = [
     path: '/amigos',
     name: 'Amigos',
     component: Amigos,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/estatisticas',
+    name: 'Estatisticas',
+    component: Estatisticas,
     meta: { requiresAuth: true }
   }
 ];
